@@ -54,11 +54,20 @@ define([
             logger.debug(this.id + ".postCreate");
 
             this._imageMap = {};
+            this._imageDefault = {
+              'image' : '',
+              'title' : ''
+            };
+
             this.imageMapping.forEach( function( mapentry ) {
-              this._imageMap[ mapentry.value ] = {
+              var entry = {
                 'image' : './'+mapentry.image,
                 'title' : mapentry.title
               };
+              this._imageMap[ mapentry.value ] = entry;
+              if ( mapentry.isDefault ) {
+                this._imageDefault = entry;
+              }
             }, this);
 
             this._updateRendering();
@@ -100,7 +109,8 @@ define([
 
                 // If a microflow has been set execute the microflow on a click.
                 if (this.mfToExecute !== "") {
-                    this._execMf(this.mfToExecute, this._contextObj.getGuid());
+                  dojoEvent.stop(e);
+                  this._execMf(this.mfToExecute, this._contextObj.getGuid());
                 }
             });
         },
@@ -113,6 +123,7 @@ define([
                         applyto: "selection",
                         guids: [guid]
                     },
+                    scope: this.mxform,
                     callback: lang.hitch(this, function (objs) {
                         if (cb && typeof cb === "function") {
                             cb(objs);
@@ -129,20 +140,17 @@ define([
         _updateRendering: function (callback) {
             logger.debug(this.id + "._updateRendering");
 
+            var entry = this._imageDefault;
+
             if (this._contextObj !== null) {
               var value = this._contextObj.get( this.attribute );
               if ( value && this._imageMap[ value ] ) {
-                this.imageNode.src = this._imageMap[ value ].image;
-                this.imageNode.title = this._imageMap[ value ].title;
-
-                this._executeCallback(callback, "_updateRendering");
-                return;
+                entry = this._imageMap[ value ];
               }
             }
 
-            // clear image
-            this.imageNode.src = '';
-            this.imageNode.title = '';
+            this.imageNode.src = entry.image;
+            this.imageNode.title = entry.title;
 
             // The callback, coming from update, needs to be executed, to let the page know it finished rendering
             this._executeCallback(callback, "_updateRendering");

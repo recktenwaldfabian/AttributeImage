@@ -12,6 +12,7 @@
             <description>The attribute used to determine the image</description>
             <attributeTypes>
                 <attributeType name="String" />
+                <attributeType name="Enum" />
             </attributeTypes>
         </property>
 
@@ -34,6 +35,11 @@
               <caption>Title</caption>
               <category>Appearance</category>
               <description>Title shown when hovering (tooltip)</description>
+            </property>
+            <property key="isDefault" type="boolean" required="true" defaultValue="false">
+              <caption>Use as default</caption>
+              <category>Appearance</category>
+              <description>Only use ONE entry as default.</description>
             </property>
           </properties>
         </property>
